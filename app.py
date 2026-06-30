@@ -167,6 +167,16 @@ def investment_thesis(text):
 
     return response.choices[0].message.content
 
+from user_service import create_user
+
+create_user("jack@test.com")
+
+from user_service import get_user
+
+user = get_user("jack@test.com")
+
+print(user)
+
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
 
