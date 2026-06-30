@@ -4,7 +4,7 @@ import gradio as gr
 from openai import OpenAI
 from pypdf import PdfReader
 
-from history_service import save_history
+from history_service import save_history, get_dashboard
 from history_service import get_history, get_analysis
 
 # DeepSeek API
@@ -263,6 +263,23 @@ def load_history():
 
     return rows
 
+def dashboard():
+    data = get_dashboard("jack@test.com")
+    md = f"""
+    # 📊 Dashboard
+
+    已分析：
+
+    {data["total"]}
+
+    平均评分：
+
+    {data["avg_score"]}
+
+    ...
+    """
+    return md
+
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
 
@@ -337,4 +354,14 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
             fn=load_history,
             outputs=history_table
         )
+
+        with gr.Tab("📈 Dashboard"):
+            refresh = gr.Button("刷新")
+
+            dashboard_md = gr.Markdown()
+
+            refresh.click(
+                dashboard,
+                outputs=dashboard_md
+            )
 demo.launch(server_name="0.0.0.0", server_port=10000)
