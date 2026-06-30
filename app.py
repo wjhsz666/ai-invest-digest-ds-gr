@@ -5,7 +5,7 @@ from openai import OpenAI
 from pypdf import PdfReader
 
 from history_service import save_history
-from history_service import get_history
+from history_service import get_history, get_analysis
 
 # DeepSeek API
 client = OpenAI(
@@ -224,6 +224,25 @@ def show_history():
 
     return md
 
+def load_history():
+
+    history = get_history("jack@test.com")
+
+    rows = []
+
+    for item in history:
+
+        rows.append([
+            item["company"],
+            item["score"],
+            item["revenue_grade"],
+            item["profit_grade"],
+            item["cashflow_grade"],
+            item["created_at"][:10]
+        ])
+
+    return rows
+
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
 
@@ -280,10 +299,13 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     with gr.Tab("📚 分析历史"):
         history_btn = gr.Button("刷新历史")
 
-        history_md = gr.Markdown()
+        history_table = gr.Dataframe(
+            headers=["公司", "评分", "收入", "利润", "现金流", "日期"],
+            interactive=False
+        )
 
         history_btn.click(
-            fn=show_history,
-            outputs=history_md
+            fn=load_history,
+            outputs=history_table
         )
 demo.launch(server_name="0.0.0.0", server_port=10000)
