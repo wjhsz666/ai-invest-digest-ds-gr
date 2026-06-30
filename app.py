@@ -279,9 +279,9 @@ def dashboard():
 
 收入C级：{data['c_count']}
 """
-
-    return md
 print(data)
+    return md
+
 
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
