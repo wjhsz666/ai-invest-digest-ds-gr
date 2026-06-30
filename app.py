@@ -169,7 +169,10 @@ def investment_thesis(text):
 
 from user_service import create_user
 
-create_user("jack@test.com")
+user = get_user("jack@test.com")
+
+if len(user) == 0:
+    create_user("jack@test.com")
 
 from user_service import get_user
 
