@@ -7,6 +7,7 @@ from pypdf import PdfReader
 from history_service import save_history, get_dashboard
 from history_service import get_history, get_analysis
 
+
 # DeepSeek API
 client = OpenAI(
     api_key=os.getenv("DEEPSEEK_API_KEY"),
@@ -279,7 +280,8 @@ def dashboard():
 
 收入C级：{data['c_count']}
 """
-  return md
+
+    return md
 
 
 # UI界面升级
