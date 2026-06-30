@@ -1,4 +1,5 @@
 import os
+import re
 import gradio as gr
 from openai import OpenAI
 from pypdf import PdfReader
@@ -70,12 +71,19 @@ def analyze(file):
     )
     analysis = response.choices[0].message.content
 
+    match = re.search(r"公司健康评分.*?(\d{1,3})", analysis)
+
+    if match:
+        score = int(match.group(1))
+    else:
+        score = 0
+
     company = file.name.split("/")[-1].replace(".pdf", "")
 
     save_history(
         email="jack@test.com",
         company=company,
-        score=0,
+        score=score,
         analysis_result=analysis
     )
 
