@@ -347,7 +347,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
             dashboard_md = gr.Markdown()
 
             refresh.click(
-                fn=dashboard,,
+                fn=dashboard,
                 outputs=dashboard_md
             )
 demo.launch(server_name="0.0.0.0", server_port=10000)
