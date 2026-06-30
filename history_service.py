@@ -44,35 +44,39 @@ def get_analysis(record_id):
         return response.data[0]
 
     return None
-
-def get_history(email):
-
-    response = (
-        supabase
-        .table("analysis_history")
-        .select("*")
-        .eq("email", email)
-        .order("created_at", desc=True)
-        .execute()
-    )
-
-    return response.data
-
 def get_dashboard(email):
+
     history = get_history(email)
+
     total = len(history)
 
-    avg_score = ...
+    if total == 0:
+        return {
+            "total": 0,
+            "avg_score": 0,
+            "a_count": 0,
+            "b_count": 0,
+            "c_count": 0,
+            "top5": [],
+            "recent": []
+        }
 
-    a_count = ...
+    avg_score = sum(item["score"] for item in history) / total
 
-    b_count = ...
+    a_count = sum(1 for item in history if item["revenue_grade"] == "A")
 
-    c_count = ...
+    b_count = sum(1 for item in history if item["revenue_grade"] == "B")
 
-    top5 = ...
+    c_count = sum(1 for item in history if item["revenue_grade"] == "C")
 
-    recent = ...
+    top5 = sorted(
+        history,
+        key=lambda x: x["score"],
+        reverse=True
+    )[:5]
+
+    recent = history[:5]
+
     return {
 
         "total": total,
@@ -90,3 +94,5 @@ def get_dashboard(email):
         "recent": recent
 
     }
+
+
