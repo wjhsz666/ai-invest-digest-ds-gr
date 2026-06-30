@@ -1,6 +1,6 @@
 from database import supabase
 
-def save_history(email, company, score, summary):
+def save_history(email, company, score, analysis_result):
 
     return (
         supabase
@@ -9,7 +9,7 @@ def save_history(email, company, score, summary):
             "email": email,
             "company": company,
             "score": score,
-            "summary": summary
+            "analysis_result": analysis_result
         })
         .execute()
     )
