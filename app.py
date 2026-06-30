@@ -168,14 +168,10 @@ def investment_thesis(text):
 
     return response.choices[0].message.content
 
-from user_service import create_user
-
 user = get_user("jack@test.com")
 
 if len(user) == 0:
     create_user("jack@test.com")
-
-from user_service import get_user
 
 user = get_user("jack@test.com")
 
