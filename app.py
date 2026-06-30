@@ -185,18 +185,19 @@ def show_history():
 
     history = get_history("jack@test.com")
 
-    if len(history)==0:
-        return "暂无分析"
+    if not history:
+        return "暂无分析记录"
 
-    md=""
+    md = "# 📚 分析历史\n\n"
 
     for item in history:
 
         md += f"""
 ## 📄 {item['company']}
 
-分析时间：
-{item['created_at']}
+📅 {item['created_at'][:10]}
+
+⭐ 评分：{item['score']}
 
 ---
 
@@ -258,12 +259,12 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         outputs=compare_output
     )
     with gr.Tab("📚 分析历史"):
-        history_output = gr.Markdown()
+        history_btn = gr.Button("刷新历史")
 
-        refresh_btn = gr.Button("刷新历史")
+        history_md = gr.Markdown()
 
-        refresh_btn.click(
+        history_btn.click(
             fn=show_history,
-            outputs=history_output
+            outputs=history_md
         )
 demo.launch(server_name="0.0.0.0", server_port=10000)
