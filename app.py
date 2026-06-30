@@ -279,7 +279,7 @@ def dashboard():
 
 收入C级：{data['c_count']}
 """
- return md
+  return md
 
 
 # UI界面升级
