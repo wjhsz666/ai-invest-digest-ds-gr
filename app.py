@@ -4,9 +4,9 @@ import gradio as gr
 from openai import OpenAI
 from pypdf import PdfReader
 
+from database import supabase
 from history_service import save_history, get_dashboard
 from history_service import get_history, get_analysis
-
 
 # DeepSeek API
 client = OpenAI(
@@ -280,9 +280,45 @@ def dashboard():
 
 收入C级：{data['c_count']}
 """
-
     return md
 
+def show_analysis(record_id):
+    data = get_analysis(record_id)
+
+    if not data:
+        return "未找到记录"
+
+    return data["analysis_result"]
+
+def on_select(record):
+    if not record:
+        return ""
+
+    # record 格式："123 - 腾讯"
+    record_id = record.split(" - ")[0]
+
+    data = get_analysis(record_id)
+
+    if data:
+        return data["analysis_result"]
+
+    return "未找到分析结果"
+
+def get_analysis_by_company(company):
+    response = (
+        supabase
+        .table("analysis_history")
+        .select("*")
+        .eq("company", company)
+        .order("created_at", desc=True)
+        .limit(1)
+        .execute()
+    )
+
+    if response.data:
+        return response.data[0]
+
+    return None
 
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
@@ -353,10 +389,24 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
             ],
             interactive=False
         )
+        company_dropdown = gr.Dropdown(
+            label="选择历史记录",
+            choices = []
+        )
+
+        analysis_view = gr.Markdown(
+            label="AI分析结果"
+        )
 
         history_btn.click(
             fn=load_history,
-            outputs=history_table
+            outputs=[history_table, company_dropdown]
+        )
+
+        company_dropdown.change(
+            fn=on_select,
+            inputs=company_dropdown,
+            outputs=analysis_view
         )
 
         with gr.Tab("📈 Dashboard"):
