@@ -76,7 +76,7 @@ def analyze(file):
         email="jack@test.com",
         company=company,
         score=0,
-        summary=analysis
+        analysis_result=analysis
     )
 
     return analysis
