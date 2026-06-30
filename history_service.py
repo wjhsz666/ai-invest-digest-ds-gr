@@ -30,3 +30,17 @@ def get_history(email):
     )
 
     return response.data
+def get_analysis(record_id):
+
+    response = (
+        supabase
+        .table("analysis_history")
+        .select("*")
+        .eq("id", record_id)
+        .execute()
+    )
+
+    if response.data:
+        return response.data[0]
+
+    return None
