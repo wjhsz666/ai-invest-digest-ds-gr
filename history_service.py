@@ -57,3 +57,36 @@ def get_history(email):
     )
 
     return response.data
+
+def get_dashboard(email):
+    history = get_history(email)
+    total = len(history)
+
+    avg_score = ...
+
+    a_count = ...
+
+    b_count = ...
+
+    c_count = ...
+
+    top5 = ...
+
+    recent = ...
+    return {
+
+        "total": total,
+
+        "avg_score": avg_score,
+
+        "a_count": a_count,
+
+        "b_count": b_count,
+
+        "c_count": c_count,
+
+        "top5": top5,
+
+        "recent": recent
+
+    }
