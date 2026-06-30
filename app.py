@@ -78,12 +78,23 @@ def analyze(file):
     else:
         score = 0
 
+    def extract_grade(label, text):
+        match = re.search(rf"{label}[:：]\s*([ABC])", text)
+        return match.group(1) if match else "-"
+
+    revenue_grade = extract_grade("收入质量", analysis)
+    profit_grade = extract_grade("利润质量", analysis)
+    cashflow_grade = extract_grade("现金流质量", analysis)
+
     company = file.name.split("/")[-1].replace(".pdf", "")
 
     save_history(
         email="jack@test.com",
         company=company,
         score=score,
+        revenue_grade=revenue_grade,
+        profit_grade=profit_grade,
+        cashflow_grade=cashflow_grade,
         analysis_result=analysis
     )
 
