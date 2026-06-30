@@ -2,6 +2,7 @@ import gradio as gr
 import os
 from openai import OpenAI
 from pypdf import PdfReader
+from user_service import get_user, create_user
 
 # DeepSeek API
 client = OpenAI(
