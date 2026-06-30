@@ -263,22 +263,8 @@ def load_history():
 
     return rows
 
-def dashboard():
-    data = get_dashboard("jack@test.com")
-    md = f"""
-    # 📊 Dashboard
-
-    已分析：
-
-    {data["total"]}
-
-    平均评分：
-
-    {data["avg_score"]}
-
-    ...
-    """
-    return md
+data = get_dashboard("jack@test.com")
+print(data)
 
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
