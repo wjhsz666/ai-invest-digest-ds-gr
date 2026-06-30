@@ -263,7 +263,24 @@ def load_history():
 
     return rows
 
-data = get_dashboard("jack@test.com")
+def dashboard():
+    data = get_dashboard("jack@test.com")
+
+    md = f"""
+# 📊 Dashboard
+
+已分析公司：{data['total']}
+
+平均评分：{data['avg_score']:.1f}
+
+收入A级：{data['a_count']}
+
+收入B级：{data['b_count']}
+
+收入C级：{data['c_count']}
+"""
+
+    return md
 print(data)
 
 # UI界面升级
