@@ -1,8 +1,10 @@
-import gradio as gr
 import os
+import gradio as gr
 from openai import OpenAI
 from pypdf import PdfReader
-from user_service import get_user, create_user
+
+from history_service import save_history
+from history_service import get_history
 
 # DeepSeek API
 client = OpenAI(
@@ -66,8 +68,19 @@ def analyze(file):
         ],
         temperature=0.2
     )
+    analysis = response.choices[0].message.content
 
-    return response.choices[0].message.content
+    company = file.name.split("/")[-1].replace(".pdf", "")
+
+    save_history(
+        email="jack@test.com",
+        company=company,
+        score=0,
+        summary=analysis
+    )
+
+    return analysis
+
 
 def compare_companies(text1, text2):
     prompt = f"""
@@ -168,14 +181,28 @@ def investment_thesis(text):
 
     return response.choices[0].message.content
 
-user = get_user("jack@test.com")
+def show_history():
 
-if len(user) == 0:
-    create_user("jack@test.com")
+    history = get_history("jack@test.com")
 
-user = get_user("jack@test.com")
+    if len(history)==0:
+        return "暂无分析"
 
-print(user)
+    md=""
+
+    for item in history:
+
+        md += f"""
+## 📄 {item['company']}
+
+分析时间：
+{item['created_at']}
+
+---
+
+"""
+
+    return md
 
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
@@ -230,5 +257,13 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         inputs=[file1, file2],
         outputs=compare_output
     )
+    with gr.Tab("📚 分析历史"):
+        history_output = gr.Markdown()
 
+        refresh_btn = gr.Button("刷新历史")
+
+        refresh_btn.click(
+            fn=show_history,
+            outputs=history_output
+        )
 demo.launch(server_name="0.0.0.0", server_port=10000)
