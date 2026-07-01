@@ -154,17 +154,20 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     # =========================
     # 行业对比（已有）
     # =========================
-    gr.Markdown("## ⚔️ 行业对比")
+    gr.Markdown("## ⚔️ 公司对比")
 
-    file1 = gr.File(label="公司A")
-    file2 = gr.File(label="公司B")
+    file1 = gr.File(label="公司A财报PDF")
 
-    cmp_btn = gr.Button("⚔️ 开始对比", variant="primary")
-    compare_output = gr.Textbox(
-        label="对比分析报告",
-        lines=22)
+    file2 = gr.File(label="公司B财报PDF")
 
-    cmp_btn.click(
+    compare_btn = gr.Button(
+        "⚖️ AI开始比较",
+        variant="primary"
+    )
+
+    compare_output = gr.Markdown()
+
+    compare_btn.click(
         fn=compare_companies,
         inputs=[file1, file2],
         outputs=compare_output
@@ -214,21 +217,4 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
                 fn=dashboard,
                 outputs=dashboard_md
             )
-    with gr.Tab("⚖️ 公司对比"):
-        file1 = gr.File(label="公司A财报PDF")
-
-        file2 = gr.File(label="公司B财报PDF")
-
-        compare_btn = gr.Button(
-            "⚖️ AI开始比较",
-            variant="primary"
-        )
-
-        compare_output = gr.Markdown()
-
-        compare_btn.click(
-            fn=compare_companies,
-            inputs=[file1, file2],
-            outputs=compare_output
-        )
 demo.launch(server_name="0.0.0.0", server_port=10000)
