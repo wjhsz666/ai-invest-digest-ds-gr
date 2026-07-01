@@ -7,6 +7,7 @@ import gradio as gr
 from report_service import export_pdf
 from pdf_service import read_pdf
 from report_service import export_latest
+from compare_service import compare_companies
 from history_service import (
     get_history,
     get_analysis,
@@ -103,7 +104,7 @@ def on_select(company):
         return data["analysis_result"]
 
     return "未找到分析结果"
- 
+
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
 
@@ -213,4 +214,21 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
                 fn=dashboard,
                 outputs=dashboard_md
             )
+    with gr.Tab("⚖️ 公司对比"):
+        file1 = gr.File(label="公司A财报PDF")
+
+        file2 = gr.File(label="公司B财报PDF")
+
+        compare_btn = gr.Button(
+            "⚖️ AI开始比较",
+            variant="primary"
+        )
+
+        compare_output = gr.Markdown()
+
+        compare_btn.click(
+            fn=compare_companies,
+            inputs=[file1, file2],
+            outputs=compare_output
+        )
 demo.launch(server_name="0.0.0.0", server_port=10000)
