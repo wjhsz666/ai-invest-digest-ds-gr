@@ -83,15 +83,20 @@ def show_history():
 
 def load_history(user):
 
+    print("==========")
+    print("user =", repr(user))
+
     if user is None:
+        print("user is None")
         return gr.update(choices=[], value=None)
 
     history = get_history(user)
 
-    companies = []
+    print("history =", history)
 
-    for item in history:
-        companies.append(item["company"])
+    companies = [item["company"] for item in history]
+
+    print("companies =", companies)
 
     return gr.update(
         choices=companies,
