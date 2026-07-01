@@ -22,48 +22,15 @@ from history_service import (
 
 current_user = None
 
-def login(email, password):
-
-    global current_user
+def register(email, password):
 
     try:
+        sign_up(email, password)
 
-        sign_in(email, password)
-
-        current_user = email
-
-        return f"✅ 已登录：{email}"
+        return "✅ 注册成功，请登录。"
 
     except Exception as e:
-
         return str(e)
-
-    def logout():
-
-        global current_user
-
-        sign_out()
-
-        current_user = None
-
-        return "🔒 已退出登录"
-
-    login_btn.click(
-        fn=login,
-        inputs=[email_input, password_input],
-        outputs=login_status
-    )
-
-    register_btn.click(
-        fn=register,
-        inputs=[email_input, password_input],
-        outputs=login_status
-    )
-
-    logout_btn.click(
-        fn=logout,
-        outputs=login_status
-    )
 
 def show_history():
 
@@ -180,6 +147,23 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
 
     login_status = gr.Markdown(
         "🔒 当前状态：未登录"
+    )
+    # 再绑定
+    login_btn.click(
+        fn=sign_in,
+        inputs=[email_input, password_input],
+        outputs=login_status
+    )
+
+    register_btn.click(
+        fn=register,
+        inputs=[email_input, password_input],
+        outputs=login_status
+    )
+
+    logout_btn.click(
+        fn=sign_up,
+        outputs=login_status
     )
 
     gr.Markdown("---")
