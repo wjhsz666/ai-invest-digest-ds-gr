@@ -103,7 +103,36 @@ def dashboard(user):
     if user is None:
         return "请先登录"
 
-    return get_dashboard(user)
+    data = get_dashboard(user)
+
+    md = f"""
+# 📊 Dashboard
+
+📈 总分析次数：{data['total']}
+
+⭐ 平均评分：{data['avg_score']:.1f}
+
+🟢 收入A级：{data['a_count']}
+
+🟡 收入B级：{data['b_count']}
+
+🔴 收入C级：{data['c_count']}
+
+---
+
+## 🏆 Top 5 公司
+
+"""
+
+    for item in data["top5"]:
+        md += f"• {item['company']}（{item['score']} 分）\n"
+
+    md += "\n---\n## 🕒 最近分析\n"
+
+    for item in data["recent"]:
+        md += f"• {item['company']}（{item['score']} 分）\n"
+
+    return md
 
 def show_analysis(record_id):
     data = get_analysis(record_id)
