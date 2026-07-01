@@ -8,6 +8,11 @@ from report_service import export_pdf
 from pdf_service import read_pdf
 from report_service import download_latest_pdf
 from compare_service import compare_companies
+from auth_service import (
+    sign_up,
+    sign_in,
+    sign_out
+)
 from history_service import (
     get_history,
     get_analysis,
@@ -15,10 +20,54 @@ from history_service import (
     get_analysis_by_company
 )
 
+current_user = None
+
+def login(email, password):
+
+    global current_user
+
+    try:
+
+        sign_in(email, password)
+
+        current_user = email
+
+        return f"✅ 已登录：{email}"
+
+    except Exception as e:
+
+        return str(e)
+
+    def logout():
+
+        global current_user
+
+        sign_out()
+
+        current_user = None
+
+        return "🔒 已退出登录"
+
+    login_btn.click(
+        fn=login,
+        inputs=[email_input, password_input],
+        outputs=login_status
+    )
+
+    register_btn.click(
+        fn=register,
+        inputs=[email_input, password_input],
+        outputs=login_status
+    )
+
+    logout_btn.click(
+        fn=logout,
+        outputs=login_status
+    )
 
 def show_history():
 
-    history = get_history("jack@test.com")
+    history = get_history(current_user)
 
     if not history:
         return "暂无分析记录"
@@ -43,7 +92,7 @@ def show_history():
 
 def load_history():
 
-    history = get_history("jack@test.com")
+    history = get_history(current_user)
 
     rows = []
     companies = []
@@ -68,7 +117,7 @@ def load_history():
     )
 
 def dashboard():
-    data = get_dashboard("jack@test.com")
+    data = get_dashboard(current_user)
 
     md = f"""
 # 📊 Dashboard
@@ -107,7 +156,33 @@ def on_select(company):
 
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
+    with gr.Row():
+        email_input = gr.Textbox(
+            label="邮箱",
+            scale=3
+        )
 
+        password_input = gr.Textbox(
+            label="密码",
+            type="password",
+            scale=3
+        )
+
+    with gr.Row():
+        login_btn = gr.Button(
+            "登录",
+            variant="primary"
+        )
+
+        register_btn = gr.Button("注册")
+
+        logout_btn = gr.Button("退出")
+
+    login_status = gr.Markdown(
+        "🔒 当前状态：未登录"
+    )
+
+    gr.Markdown("---")
     gr.Markdown("# 🧠 AI投研决策系统 Pro")
     gr.Markdown("📊 上传财报 → AI评分 + 对比 + 投资建议")
 
