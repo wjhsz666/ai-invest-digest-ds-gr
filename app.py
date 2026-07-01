@@ -165,7 +165,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         lines=22)
 
     cmp_btn.click(
-        fn=lambda f1, f2: compare_companies(read_pdf(f1), read_pdf(f2)),
+        fn=compare_companies,
         inputs=[file1, file2],
         outputs=compare_output
     )
