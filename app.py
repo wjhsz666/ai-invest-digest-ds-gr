@@ -22,6 +22,22 @@ from history_service import (
 
 current_user = None
 
+def login(email, password):
+
+    global current_user
+
+    try:
+
+        result = sign_in(email, password)
+
+        current_user = result.user.email
+
+        return f"✅ 登录成功：{current_user}"
+
+    except Exception as e:
+
+        return f"❌ {e}"
+
 def register(email, password):
 
     try:
