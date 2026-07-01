@@ -20,18 +20,24 @@ from report_service import download_latest_pdf
 
 current_user = None
 def login(email, password):
-    global current_user
+
     try:
 
         result = sign_in(email, password)
 
-        current_user = result.user.email
+        user = result.user.email
 
-        return f"✅ 登录成功：{current_user}"
+        return (
+            f"✅ 登录成功：{user}",
+            user
+        )
 
     except Exception as e:
 
-        return f"❌ {e}"
+        return (
+            f"❌ {e}",
+            None
+        )
 
 def register(email, password):
 
@@ -43,13 +49,13 @@ def register(email, password):
     except Exception as e:
         return str(e)
 def logout():
-    global current_user
 
     sign_out()
 
-    current_user = None
-
-    return "👋 已退出登录"
+    return (
+        "👋 已退出登录",
+        None
+    )
 def show_history():
 
     history = get_history(current_user)
@@ -149,6 +155,7 @@ def thesis_wrapper(file):
 
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
+    user_state = gr.State(value=None)
     with gr.Row():
         email_input = gr.Textbox(
             label="邮箱",
@@ -178,7 +185,10 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     login_btn.click(
         fn=login,
         inputs=[email_input, password_input],
-        outputs=login_status
+        outputs=[
+            login_status,
+            user_state
+        ]
     )
 
     register_btn.click(
@@ -188,8 +198,11 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     )
 
     logout_btn.click(
-        fn= logout,
-        outputs=login_status
+        fn=logout,
+        outputs=[
+            login_status,
+            user_state
+        ]
     )
 
     gr.Markdown("---")
@@ -224,16 +237,19 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         lines=18)
 
 
-    def analyze_wrapper(file):
-        if current_user is None:
+    def analyze_wrapper(file, user):
+        if user is None:
             return "请先登录"
 
-        return analyze(file, current_user)
+        return analyze(file, user)
 
 
     analyze_btn.click(
         fn=analyze_wrapper,
-        inputs=file_input,
+        inputs=[
+            file_input,
+            user_state
+        ],
         outputs=analyze_output
     )
 
