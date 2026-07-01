@@ -3,8 +3,12 @@ from ai_service import (
     compare_companies,
     investment_thesis
 )
-
+import gradio as gr
+from database import supabase
 from pdf_service import read_pdf
+from history_service import get_dashboard, get_analysis
+from history_service import get_history
+
 
 def show_history():
 
@@ -30,24 +34,6 @@ def show_history():
 
     return md
 
-def load_history():
-
-    history = get_history("jack@test.com")
-
-    rows = []
-
-    for item in history:
-
-        rows.append([
-            item["company"],
-            item["score"],
-            item["revenue_grade"],
-            item["profit_grade"],
-            item["cashflow_grade"],
-            item["created_at"][:10]
-        ])
-
-    return rows
 
 def load_history():
 
