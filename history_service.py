@@ -109,3 +109,21 @@ def get_analysis_by_company(company):
 
     return None
 
+def get_latest_analysis(email):
+
+    response = (
+        supabase
+        .table("analysis_history")
+        .select("*")
+        .eq("email", email)
+        .order("created_at", desc=True)
+        .limit(1)
+        .execute()
+    )
+
+    if response.data:
+        return response.data[0]
+
+    return None
+
+
