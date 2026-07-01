@@ -166,7 +166,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     )
     # 再绑定
     login_btn.click(
-        fn=sign_in,
+        fn=login,
         inputs=[email_input, password_input],
         outputs=login_status
     )
