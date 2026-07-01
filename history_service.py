@@ -94,16 +94,19 @@ def get_dashboard(email):
         "recent": recent
 
     }
-def get_analysis_by_company(company):
+def get_analysis_by_company(email, company):
+
     response = (
         supabase
         .table("analysis_history")
         .select("*")
+        .eq("email", email)
         .eq("company", company)
         .order("created_at", desc=True)
         .limit(1)
         .execute()
     )
+
     if response.data:
         return response.data[0]
 
