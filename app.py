@@ -39,6 +39,7 @@ def login(email, password):
             None
         )
 
+
 def register(email, password):
 
     try:
@@ -82,26 +83,20 @@ def show_history():
 
 
 def load_history(user):
-    return "TEST_TRIGGERED"
-
-    print("==========")
-    print("user =", repr(user))
 
     if user is None:
-        print("user is None")
         return gr.update(choices=[], value=None)
 
     history = get_history(user)
 
-    print("history =", history)
-
     companies = [item["company"] for item in history]
 
-    print("companies =", companies)
+    if len(companies) == 0:
+        return gr.update(choices=[], value=None)
 
     return gr.update(
         choices=companies,
-        value=None
+        value=companies[0]   # ✅ 必须选已有值
     )
 
 def dashboard(user):
