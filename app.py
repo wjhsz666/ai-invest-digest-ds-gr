@@ -6,7 +6,7 @@ from ai_service import (
 import gradio as gr
 from report_service import export_pdf
 from pdf_service import read_pdf
-from report_service import export_latest
+from report_service import download_latest_pdf
 from compare_service import compare_companies
 from history_service import (
     get_history,
@@ -129,10 +129,12 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     analyze_output = gr.Textbox(
         label="评分报告",
         lines=18)
-    pdf_file = gr.File(label="下载报告")
+    pdf_file = gr.File(
+        label="📄 下载生成的PDF报告"
+    )
     analyze_btn.click(fn=analyze, inputs=file_input, outputs=analyze_output)
     download_btn.click(
-        fn=export_latest,
+        fn=download_latest_pdf,
         outputs=pdf_file
     )
     # =========================
