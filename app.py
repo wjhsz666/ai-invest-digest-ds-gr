@@ -16,12 +16,10 @@ from history_service import (
     get_dashboard,
     get_analysis_by_company
 )
+from session import current_user
 
-current_user = None
 
 def login(email, password):
-
-    global current_user
 
     try:
 
@@ -218,7 +216,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         inputs=file_input,
         outputs=analyze_output
     )
-    
+
     # =========================
     # 投资观点（新🔥）
     # =========================
