@@ -2,8 +2,6 @@ import os
 import re
 
 from openai import OpenAI
-
-from app import current_user
 from pdf_service import read_pdf
 from history_service import save_history
 
@@ -13,7 +11,7 @@ client = OpenAI(
 )
 
 # 核心分析函数
-def analyze(file):
+def analyze(file,email):
     if file is None:
         return "请上传财报PDF"
 
@@ -79,7 +77,7 @@ def analyze(file):
     company = file.name.split("/")[-1].replace(".pdf", "")
 
     save_history(
-        email=current_user,
+        email=email,
         company=company,
         score=score,
         revenue_grade=revenue_grade,
