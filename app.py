@@ -222,10 +222,6 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     analyze_output = gr.Textbox(
         label="评分报告",
         lines=18)
-    pdf_file = gr.File(
-        label="📄 下载生成的PDF报告",
-        interactive=False
-    )
 
 
     def analyze_wrapper(file):
