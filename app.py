@@ -4,8 +4,9 @@ from ai_service import (
     investment_thesis
 )
 import gradio as gr
-from database import supabase
+from report_service import export_pdf
 from pdf_service import read_pdf
+from report_service import export_latest
 from history_service import (
     get_history,
     get_analysis,
@@ -102,14 +103,7 @@ def on_select(company):
         return data["analysis_result"]
 
     return "未找到分析结果"
-
-
-
-    if response.data:
-        return response.data[0]
-
-    return None
-
+ 
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
 
@@ -122,13 +116,24 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     gr.Markdown("## 📊 单公司分析")
 
     file_input = gr.File(label="上传财报PDF")
-    analyze_btn = gr.Button("📊 生成评分报告", variant="primary")
+    with gr.Row():
+        analyze_btn = gr.Button(
+            "📊 生成评分报告",
+            variant="primary"
+        )
+
+        download_btn = gr.Button(
+            "📄 下载PDF"
+        )
     analyze_output = gr.Textbox(
         label="评分报告",
         lines=18)
-
+    pdf_file = gr.File(label="下载报告")
     analyze_btn.click(fn=analyze, inputs=file_input, outputs=analyze_output)
-
+    download_btn.click(
+        fn=export_latest,
+        outputs=pdf_file
+    )
     # =========================
     # 投资观点（新🔥）
     # =========================
