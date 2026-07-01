@@ -16,11 +16,11 @@ from history_service import (
     get_dashboard,
     get_analysis_by_company
 )
-from session import current_user
 
 
+current_user = None
 def login(email, password):
-
+    global current_user
     try:
 
         result = sign_in(email, password)
