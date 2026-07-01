@@ -6,8 +6,12 @@ from ai_service import (
 import gradio as gr
 from database import supabase
 from pdf_service import read_pdf
-from history_service import get_dashboard, get_analysis
-from history_service import get_history
+from history_service import (
+    get_history,
+    get_analysis,
+    get_dashboard,
+    get_analysis_by_company
+)
 
 
 def show_history():
@@ -40,6 +44,7 @@ def load_history():
     history = get_history("jack@test.com")
 
     rows = []
+    companies = []
 
     for item in history:
 
@@ -53,7 +58,12 @@ def load_history():
             item["created_at"][:10]
         ])
 
-    return rows
+        companies.append(item["company"])
+
+    return (
+        rows,
+        gr.update(choices=companies)
+    )
 
 def dashboard():
     data = get_dashboard("jack@test.com")
@@ -81,30 +91,19 @@ def show_analysis(record_id):
 
     return data["analysis_result"]
 
-def on_select(record):
-    if not record:
+def on_select(company):
+
+    if not company:
         return ""
 
-    # record 格式："123 - 腾讯"
-    record_id = record.split(" - ")[0]
-
-    data = get_analysis(record_id)
+    data = get_analysis_by_company(company)
 
     if data:
         return data["analysis_result"]
 
     return "未找到分析结果"
 
-def get_analysis_by_company(company):
-    response = (
-        supabase
-        .table("analysis_history")
-        .select("*")
-        .eq("company", company)
-        .order("created_at", desc=True)
-        .limit(1)
-        .execute()
-    )
+
 
     if response.data:
         return response.data[0]
@@ -200,7 +199,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
             outputs=analysis_view
         )
 
-        with gr.Tab("📈 Dashboard"):
+    with gr.Tab("📈 Dashboard"):
             refresh = gr.Button("刷新")
 
             dashboard_md = gr.Markdown()
