@@ -127,11 +127,11 @@ def export_pdf(record):
     return filename
 
 
-def download_latest_pdf():
+def download_latest_pdf(email):
 
-    record = get_latest_analysis("jack@test.com")
+    record = get_latest_analysis(email)
 
-    if not record:
+    if record is None:
         return None
 
     return export_pdf(record)
