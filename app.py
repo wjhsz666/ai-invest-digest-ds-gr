@@ -82,6 +82,7 @@ def show_history():
 
 
 def load_history(user):
+    return "TEST_TRIGGERED"
 
     print("==========")
     print("user =", repr(user))
