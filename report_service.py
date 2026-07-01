@@ -1,13 +1,23 @@
 import os
-from reportlab.platypus import SimpleDocTemplate, Paragraph
+
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer
+)
 from reportlab.lib.styles import getSampleStyleSheet
+
 from history_service import get_latest_analysis
 
-def export_pdf(company, analysis):
+
+def export_pdf(record):
 
     os.makedirs("reports", exist_ok=True)
 
-    filename = f"reports/{company}.pdf"
+    filename = (
+        f"reports/"
+        f"{record['company']}_{record['created_at'][:10]}.pdf"
+    )
 
     styles = getSampleStyleSheet()
 
@@ -15,27 +25,79 @@ def export_pdf(company, analysis):
 
     story = []
 
-    story.append(Paragraph("<b>AI Investment Lab</b>", styles["Heading1"]))
+    # 标题
+    story.append(
+        Paragraph(
+            "AI Investment Lab",
+            styles["Title"]
+        )
+    )
 
-    story.append(Paragraph(f"Company: {company}", styles["Heading2"]))
+    story.append(Spacer(1, 20))
 
-    story.append(Paragraph("<br/><br/>", styles["Normal"]))
+    # 公司
+    story.append(
+        Paragraph(
+            f"<b>Company：</b>{record['company']}",
+            styles["Heading2"]
+        )
+    )
 
-    story.append(Paragraph(analysis.replace("\n", "<br/>"), styles["BodyText"]))
+    story.append(
+        Paragraph(
+            f"<b>Score：</b>{record['score']}",
+            styles["Normal"]
+        )
+    )
+
+    story.append(
+        Paragraph(
+            f"<b>Revenue：</b>{record['revenue_grade']}",
+            styles["Normal"]
+        )
+    )
+
+    story.append(
+        Paragraph(
+            f"<b>Profit：</b>{record['profit_grade']}",
+            styles["Normal"]
+        )
+    )
+
+    story.append(
+        Paragraph(
+            f"<b>Cash Flow：</b>{record['cashflow_grade']}",
+            styles["Normal"]
+        )
+    )
+
+    story.append(Spacer(1, 20))
+
+    story.append(
+        Paragraph(
+            "<b>AI Analysis</b>",
+            styles["Heading2"]
+        )
+    )
+
+    analysis = record["analysis_result"].replace("\n", "<br/>")
+
+    story.append(
+        Paragraph(
+            analysis,
+            styles["BodyText"]
+        )
+    )
 
     doc.build(story)
 
     return filename
 
-def export_latest():
+def download_latest_pdf():
 
-    data = get_latest_analysis("jack@test.com")
+    record = get_latest_analysis("jack@test.com")
 
-    if not data:
+    if not record:
         return None
 
-    company = data["company"]
-
-    analysis = data["analysis_result"]
-
-    return export_pdf(company, analysis)
+    return export_pdf(record)
