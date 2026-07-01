@@ -4,10 +4,7 @@ from ai_service import (
     investment_thesis
 )
 import gradio as gr
-from report_service import export_pdf
 from pdf_service import read_pdf
-from report_service import download_latest_pdf
-from compare_service import compare_companies
 from auth_service import (
     sign_up,
     sign_in,
@@ -178,7 +175,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     )
 
     logout_btn.click(
-        fn=sign_up,
+        fn= sign_out,
         outputs=login_status
     )
 
@@ -207,11 +204,21 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     pdf_file = gr.File(
         label="📄 下载生成的PDF报告"
     )
-    analyze_btn.click(fn=analyze, inputs=file_input, outputs=analyze_output)
-    download_btn.click(
-        fn=download_latest_pdf,
-        outputs=pdf_file
+
+
+    def analyze_wrapper(file):
+        if current_user is None:
+            return "请先登录"
+
+        return analyze(file, current_user)
+
+
+    analyze_btn.click(
+        fn=analyze_wrapper,
+        inputs=file_input,
+        outputs=analyze_output
     )
+    
     # =========================
     # 投资观点（新🔥）
     # =========================
