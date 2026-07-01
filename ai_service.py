@@ -3,6 +3,7 @@ import re
 
 from openai import OpenAI
 
+from app import current_user
 from pdf_service import read_pdf
 from history_service import save_history
 
@@ -78,7 +79,7 @@ def analyze(file):
     company = file.name.split("/")[-1].replace(".pdf", "")
 
     save_history(
-        email="jack@test.com",
+        email=current_user,
         company=company,
         score=score,
         revenue_grade=revenue_grade,
