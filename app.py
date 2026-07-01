@@ -16,7 +16,7 @@ from history_service import (
     get_dashboard,
     get_analysis_by_company
 )
-
+from report_service import download_latest_pdf
 
 current_user = None
 def login(email, password):
@@ -208,9 +208,16 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
             variant="primary"
         )
 
-        download_btn = gr.DownloadButton(
-            label="📄 下载PDF",
-            value=None
+        download_btn = gr.Button("📄 下载PDF")
+
+        pdf_file = gr.File(
+            label="下载报告",
+            interactive=False
+        )
+
+        download_btn.click(
+            fn=download_latest_pdf,
+            outputs=pdf_file
         )
     analyze_output = gr.Textbox(
         label="评分报告",
