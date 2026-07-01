@@ -14,9 +14,9 @@ from history_service import (
     get_history,
     get_analysis,
     get_dashboard,
-    get_analysis_by_company
+    get_analysis_by_company, get_latest_analysis
 )
-from report_service import download_latest_pdf
+from report_service import download_latest_pdf, export_pdf
 
 user_state = None
 def login(email, password):
@@ -98,23 +98,12 @@ def load_history(user):
         value=None
     )
 
-def dashboard():
-    data = get_dashboard(user_state)
+def dashboard(user):
 
-    md = f"""
-# 📊 Dashboard
+    if user is None:
+        return "请先登录"
 
-已分析公司：{data['total']}
-
-平均评分：{data['avg_score']:.1f}
-
-收入A级：{data['a_count']}
-
-收入B级：{data['b_count']}
-
-收入C级：{data['c_count']}
-"""
-    return md
+    return get_dashboard(user)
 
 def show_analysis(record_id):
     data = get_analysis(record_id)
@@ -144,6 +133,13 @@ def thesis_wrapper(file):
     return investment_thesis(
         read_pdf(file)
     )
+
+
+
+
+
+
+
 
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
@@ -222,6 +218,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
 
         download_btn.click(
             fn=download_latest_pdf,
+            inputs=user_state,
             outputs=pdf_file
         )
     analyze_output = gr.Textbox(
@@ -235,6 +232,18 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
 
         return analyze(file, user)
 
+
+    def download_latest_pdf(user):
+
+        if user is None:
+            return None
+
+        record = get_latest_analysis(user)
+
+        if record is None:
+            return None
+
+        return export_pdf(record)
 
     analyze_btn.click(
         fn=analyze_wrapper,
@@ -328,6 +337,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
 
             refresh.click(
                 fn=dashboard,
+                inputs=user_state,
                 outputs=dashboard_md
             )
 demo.launch(server_name="0.0.0.0", server_port=10000)
