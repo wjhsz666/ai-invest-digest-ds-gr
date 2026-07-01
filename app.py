@@ -18,7 +18,7 @@ from history_service import (
 )
 from report_service import download_latest_pdf
 
-current_user = None
+user_state = None
 def login(email, password):
 
     try:
@@ -58,7 +58,7 @@ def logout():
     )
 def show_history():
 
-    history = get_history(current_user)
+    history = get_history(user_state)
 
     if not history:
         return "暂无分析记录"
@@ -81,34 +81,25 @@ def show_history():
     return md
 
 
-def load_history():
+def load_history(user):
 
-    history = get_history(current_user)
+    if user is None:
+        return gr.update(choices=[], value=None)
 
-    rows = []
+    history = get_history(user)
+
     companies = []
 
     for item in history:
-
-        rows.append([
-            item["id"],
-            item["company"],
-            item["score"],
-            item["revenue_grade"],
-            item["profit_grade"],
-            item["cashflow_grade"],
-            item["created_at"][:10]
-        ])
-
         companies.append(item["company"])
 
-    return (
-        rows,
-        gr.update(choices=companies)
+    return gr.update(
+        choices=companies,
+        value=None
     )
 
 def dashboard():
-    data = get_dashboard(current_user)
+    data = get_dashboard(user_state)
 
     md = f"""
 # 📊 Dashboard
@@ -133,17 +124,18 @@ def show_analysis(record_id):
 
     return data["analysis_result"]
 
-def on_select(company):
+def on_select(company, user):
 
-    if not company:
+    if user is None:
         return ""
 
-    data = get_analysis_by_company(company)
+    data = get_analysis_by_company(user, company)
 
     if data:
         return data["analysis_result"]
 
-    return "未找到分析结果"
+    return ""
+
 def thesis_wrapper(file):
 
     if file is None:
@@ -317,14 +309,17 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
 
         history_btn.click(
             fn=load_history,
-            outputs=[history_table, company_dropdown]
+            inputs=user_state,
+            outputs=company_dropdown
         )
-
-        company_dropdown.change(
-            fn=on_select,
-            inputs=company_dropdown,
-            outputs=analysis_view
-        )
+    company_dropdown.change(
+        fn=on_select,
+        inputs=[
+            company_dropdown,
+            user_state
+        ],
+        outputs=analysis_view
+    )
 
     with gr.Tab("📈 Dashboard"):
             refresh = gr.Button("刷新")
