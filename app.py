@@ -42,7 +42,14 @@ def register(email, password):
 
     except Exception as e:
         return str(e)
+def logout():
+    global current_user
 
+    sign_out()
+
+    current_user = None
+
+    return "👋 已退出登录"
 def show_history():
 
     history = get_history(current_user)
@@ -131,6 +138,14 @@ def on_select(company):
         return data["analysis_result"]
 
     return "未找到分析结果"
+def thesis_wrapper(file):
+
+    if file is None:
+        return "请先上传财报PDF"
+
+    return investment_thesis(
+        read_pdf(file)
+    )
 
 # UI界面升级
 with gr.Blocks(title="AI投研决策系统 Pro") as demo:
@@ -173,7 +188,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     )
 
     logout_btn.click(
-        fn= sign_out,
+        fn= logout,
         outputs=login_status
     )
 
@@ -193,14 +208,16 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
             variant="primary"
         )
 
-        download_btn = gr.Button(
-            "📄 下载PDF"
+        download_btn = gr.DownloadButton(
+            label="📄 下载PDF",
+            value=None
         )
     analyze_output = gr.Textbox(
         label="评分报告",
         lines=18)
     pdf_file = gr.File(
-        label="📄 下载生成的PDF报告"
+        label="📄 下载生成的PDF报告",
+        interactive=False
     )
 
 
@@ -228,7 +245,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         lines=18)
 
     thesis_btn.click(
-        fn=lambda f: investment_thesis(read_pdf(f)),
+        fn=thesis_wrapper,
         inputs=file_input,
         outputs=thesis_output
     )
