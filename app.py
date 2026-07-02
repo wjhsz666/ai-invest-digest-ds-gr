@@ -27,10 +27,10 @@ def login(email, password):
         result = sign_in(email, password)
 
         user = result.user.email
-        print(get_today_usage(email))
+        print(get_today_usage("/email/"))
         return (
             f"✅ 登录成功：{user}",
-            user      
+            user
         )
 
     except Exception as e:
@@ -212,7 +212,7 @@ with gr.Blocks(
     register_btn.click(
         fn=register,
         inputs=[email_input, password_input],
-        outputs=login_status    
+        outputs=login_status
     )
 
     logout_btn.click(
