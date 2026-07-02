@@ -25,10 +25,8 @@ def login(email, password):
     try:
 
         result = sign_in(email, password)
-
         user = result.user.email
-        print(get_today_usage("wjhsz666@qq.com"))
-        return (
+               return (
             f"✅ 登录成功：{user}",
             user
         )
