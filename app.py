@@ -25,8 +25,10 @@ def login(email, password):
     try:
 
         result = sign_in(email, password)
+
         user = result.user.email
-               return (
+
+        return (
             f"✅ 登录成功：{user}",
             user
         )
@@ -274,7 +276,7 @@ with gr.Blocks(
     def analyze_wrapper(file, user):
         if user is None:
             return "请先登录"
-        if not can_use(user_state):
+        if not can_use(user):
             return "❌ 今日免费分析次数已用完，请升级 Pro。"
         increase_usage(user)
 
