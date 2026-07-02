@@ -13,7 +13,7 @@ def get_today_usage(email):
         .table("user_usage")
         .select("*")
         .eq("email", email)
-        .eq("date", today)
+        .eq("usage_date", today)
         .execute()
     )
 
