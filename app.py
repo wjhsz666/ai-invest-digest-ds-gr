@@ -165,14 +165,13 @@ def thesis_wrapper(file):
     )
 
 # UI界面升级
-gr.Markdown("# 🧠 AI投研决策系统 Pro")
-gr.Markdown("📊 上传财报 → AI评分 + 对比 + 投资建议")
-
 with gr.Blocks(
     title="AI投研决策系统 Pro",
     theme=gr.themes.Soft()
 ) as demo:
     user_state = gr.State(value=None)
+    gr.Markdown("# 🧠 AI投研决策系统 Pro")
+    gr.Markdown("📊 上传财报 → AI评分 + 对比 + 投资建议")
     with gr.Row():
         email_input = gr.Textbox(
             label="邮箱",
@@ -324,11 +323,6 @@ with gr.Blocks(
         outputs=compare_output
     )
 
-    gr.Markdown("""
-    ## ⚖️ 公司财报对比
-
-    同时上传两家公司财报，自动生成对比分析。
-    """)
     history_btn = gr.Button("刷新历史")
     history_table = gr.Dataframe(
             headers=[
@@ -366,18 +360,6 @@ with gr.Blocks(
         outputs=analysis_view
     )
 
-    gr.Markdown("""
-    ## 📚 历史记录
-
-    查看并快速切换历史分析结果。
-    """)
-    refresh = gr.Button("刷新")
-    dashboard_md = gr.Markdown()
-    refresh.click(
-                fn=dashboard,
-                inputs=user_state,
-                outputs=dashboard_md
-    )
     gr.Markdown("""
     ## 📈 Dashboard
 
