@@ -17,7 +17,7 @@ from history_service import (
     get_analysis_by_company, get_latest_analysis
 )
 from report_service import download_latest_pdf, export_pdf
-from usage_service import get_today_usage
+from usage_service import get_today_usage, increase_usage
 
 user_state = None
 def login(email, password):
@@ -27,7 +27,7 @@ def login(email, password):
         result = sign_in(email, password)
 
         user = result.user.email
-        print(get_today_usage("/email/"))
+        print(get_today_usage("wjhsz666@qq.com"))
         return (
             f"✅ 登录成功：{user}",
             user
@@ -263,9 +263,22 @@ with gr.Blocks(
         label="评分报告",
         lines=18)
 
+    FREE_LIMIT = 5
+    def can_use(email):
+
+        usage = get_today_usage(email)
+
+        if usage is None:
+            return True
+
+        return usage["count"] < FREE_LIMIT
+
     def analyze_wrapper(file, user):
         if user is None:
             return "请先登录"
+        if not can_use(user_state):
+            return "❌ 今日免费分析次数已用完，请升级 Pro。"
+        increase_usage(user)
 
         return analyze(file, user)
 
