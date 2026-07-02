@@ -164,15 +164,14 @@ def thesis_wrapper(file):
         read_pdf(file)
     )
 
-
-
-
-
-
-
-
 # UI界面升级
-with gr.Blocks(title="AI投研决策系统 Pro") as demo:
+gr.Markdown("# 🧠 AI投研决策系统 Pro")
+gr.Markdown("📊 上传财报 → AI评分 + 对比 + 投资建议")
+
+with gr.Blocks(
+    title="AI投研决策系统 Pro",
+    theme=gr.themes.Soft()
+) as demo:
     user_state = gr.State(value=None)
     with gr.Row():
         email_input = gr.Textbox(
@@ -199,6 +198,7 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
     login_status = gr.Markdown(
         "🔒 当前状态：未登录"
     )
+    gr.Markdown("---")
     # 再绑定
     login_btn.click(
         fn=login,
@@ -223,24 +223,31 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         ]
     )
 
-    gr.Markdown("---")
-    gr.Markdown("# 🧠 AI投研决策系统 Pro")
-    gr.Markdown("📊 上传财报 → AI评分 + 对比 + 投资建议")
-
     # =========================
     # 单公司分析
     # =========================
-    gr.Markdown("## 📊 单公司分析")
+    gr.Markdown("""
+    ## 📊 财报分析
+
+    上传上市公司财报，生成 AI 健康评分及投资建议。
+    """)
 
     file_input = gr.File(label="上传财报PDF")
     with gr.Row():
+
         analyze_btn = gr.Button(
-            "📊 生成评分报告",
+            "📊 AI评分",
             variant="primary"
         )
 
-        download_btn = gr.Button("📄 下载PDF")
+        thesis_btn = gr.Button(
+            "🧠 投资观点"
+        )
 
+        download_btn = gr.Button(
+            "📄 下载PDF"
+        )
+    with gr.Row():
         pdf_file = gr.File(
             label="下载报告",
             interactive=False
@@ -255,13 +262,11 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         label="评分报告",
         lines=18)
 
-
     def analyze_wrapper(file, user):
         if user is None:
             return "请先登录"
 
         return analyze(file, user)
-
 
     def download_latest_pdf(user):
 
@@ -283,27 +288,24 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         ],
         outputs=analyze_output
     )
-
-    # =========================
-    # 投资观点（新🔥）
-    # =========================
-    gr.Markdown("## 🧠 投资观点生成（研报级）")
-
-    thesis_btn = gr.Button("🧠 生成投资观点", variant="secondary")
-    thesis_output = gr.Textbox(
-        label="投资观点",
-        lines=18)
-
     thesis_btn.click(
         fn=thesis_wrapper,
         inputs=file_input,
-        outputs=thesis_output
+        outputs=analyze_output
     )
+    # =========================
+    # 投资观点（新🔥）
+    # =========================
+
 
     # =========================
     # 行业对比（已有）
     # =========================
-    gr.Markdown("## ⚔️ 公司对比")
+    gr.Markdown("""
+    ## ⚖️ 公司财报对比
+
+    同时上传两家公司财报，自动生成对比分析。
+    """)
 
     file1 = gr.File(label="公司A财报PDF")
 
@@ -322,10 +324,13 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         outputs=compare_output
     )
 
-    with gr.Tab("📚 分析历史"):
-        history_btn = gr.Button("刷新历史")
+    gr.Markdown("""
+    ## ⚖️ 公司财报对比
 
-        history_table = gr.Dataframe(
+    同时上传两家公司财报，自动生成对比分析。
+    """)
+    history_btn = gr.Button("刷新历史")
+    history_table = gr.Dataframe(
             headers=[
                 "ID",
                 "公司",
@@ -337,16 +342,17 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
             ],
             interactive=False
         )
-        company_dropdown = gr.Dropdown(
+
+    company_dropdown = gr.Dropdown(
             label="选择历史记录",
             choices = []
         )
 
-        analysis_view = gr.Markdown(
+    analysis_view = gr.Markdown(
             label="AI分析结果"
         )
 
-        history_btn.click(
+    history_btn.click(
             fn=load_history,
             inputs=user_state,
             outputs=company_dropdown
@@ -360,14 +366,30 @@ with gr.Blocks(title="AI投研决策系统 Pro") as demo:
         outputs=analysis_view
     )
 
-    with gr.Tab("📈 Dashboard"):
-            refresh = gr.Button("刷新")
+    gr.Markdown("""
+    ## 📚 历史记录
 
-            dashboard_md = gr.Markdown()
-
-            refresh.click(
+    查看并快速切换历史分析结果。
+    """)
+    refresh = gr.Button("刷新")
+    dashboard_md = gr.Markdown()
+    refresh.click(
                 fn=dashboard,
                 inputs=user_state,
                 outputs=dashboard_md
-            )
+    )
+    gr.Markdown("""
+    ## 📈 Dashboard
+
+    查看累计分析数据及评分统计。
+    """)
+    refresh = gr.Button("刷新")
+
+    dashboard_md = gr.Markdown()
+
+    refresh.click(
+            fn=dashboard,
+            inputs=user_state,
+            outputs=dashboard_md
+        )
 demo.launch(server_name="0.0.0.0", server_port=10000)
