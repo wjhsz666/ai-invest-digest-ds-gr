@@ -17,6 +17,7 @@ from history_service import (
     get_analysis_by_company, get_latest_analysis
 )
 from report_service import download_latest_pdf, export_pdf
+from usage_service import get_today_usage
 
 user_state = None
 def login(email, password):
@@ -26,10 +27,10 @@ def login(email, password):
         result = sign_in(email, password)
 
         user = result.user.email
-
+        print(get_today_usage(email))
         return (
             f"✅ 登录成功：{user}",
-            user
+            user      
         )
 
     except Exception as e:
@@ -211,7 +212,7 @@ with gr.Blocks(
     register_btn.click(
         fn=register,
         inputs=[email_input, password_input],
-        outputs=login_status
+        outputs=login_status    
     )
 
     logout_btn.click(
@@ -257,6 +258,7 @@ with gr.Blocks(
             inputs=user_state,
             outputs=pdf_file
         )
+
     analyze_output = gr.Textbox(
         label="评分报告",
         lines=18)
