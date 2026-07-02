@@ -322,7 +322,11 @@ with gr.Blocks(
         inputs=[file1, file2],
         outputs=compare_output
     )
+    gr.Markdown("""
+       ## 📚 分析历史
 
+       查看分析历史和报告。
+       """)
     history_btn = gr.Button("刷新历史")
     history_table = gr.Dataframe(
             headers=[
